@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERITS — Emergency Response & Intelligent Tracking System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0b0d;
+      --surface: #111318;
+      --surface-2: #181c24;
+      --border: #1e2330;
+      --border-bright: #2a3040;
+      --text: #e8ecf4;
+      --text-muted: #6b7591;
+      --text-dim: #3d4560;
+
+      --red: #ff2d4a;
+      --red-glow: rgba(255,45,74,0.25);
+      --red-dim: rgba(255,45,74,0.08);
+      --orange: #ff6b2b;
+      --orange-glow: rgba(255,107,43,0.25);
+      --yellow: #f5c518;
+      --yellow-glow: rgba(245,197,24,0.2);
+      --green: #00e87a;
+      --green-glow: rgba(0,232,122,0.2);
+      --blue: #3d8bff;
+      --blue-glow: rgba(61,139,255,0.2);
+
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-display);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,45,74,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,45,74,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,11,13,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--red);
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .logo span {
+      color: var(--red);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--green);
+      background: rgba(0,232,122,0.06);
+      border: 1px solid rgba(0,232,122,0.15);
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    /* ===== HERO PANIC SECTION ===== */
+    .panic-section {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panic-section::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, var(--red-glow), transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ===== PANIC BUTTON ===== */
+    .panic-btn-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panic-ring {
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,45,74,0.2);
+      animation: ring-pulse 2.5s ease-in-out infinite;
+    }
+
+    .panic-ring:nth-child(2) { animation-delay: 0.8s; width: 155px; height: 155px; }
+    .panic-ring:nth-child(3) { animation-delay: 1.6s; width: 180px; height: 180px; }
+
+    @keyframes ring-pulse {
+      0% { opacity: 0.8; transform: scale(0.95); }
+      50% { opacity: 0.3; transform: scale(1.05); }
+      100% { opacity: 0.8; transform: scale(0.95); }
+    }
+
+    .panic-btn {
+      position: relative;
+      z-index: 2;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff4d63, var(--red));
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: #fff;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      box-shadow:
+        0 0 0 4px rgba(255,45,74,0.15),
+        0 8px 32px rgba(255,45,74,0.4),
+        inset 0 2px 4px rgba(255,255,255,0.15);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      user-select: none;
+    }
+
+    .panic-btn:hover {
+      box-shadow:
+        0 0 0 4px rgba(255,45,74,0.3),
+        0 12px 40px rgba(255,45,74,0.6),
+        inset 0 2px 4px rgba(255,255,255,0.15);
+      transform: scale(1.04);
+    }
+
+    .panic-btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 0 0 4px rgba(255,45,74,0.15), 0 4px 16px rgba(255,45,74,0.3);
+    }
+
+    .panic-btn.loading {
+      animation: btn-pulse 0.8s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    @keyframes btn-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.97); }
+    }
+
+    .panic-btn-icon { font-size: 1.6rem; line-height: 1; }
+
+    /* ===== PANIC FORM ===== */
+    .panic-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .panic-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .panic-title span { color: var(--red); }
+
+    .panic-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .panic-section { grid-template-columns: 1fr; }
+      .panic-btn-wrap { margin: 0 auto; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    input, select, textarea {
+      background: var(--bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-dim);
+    }
+
+    select option { background: #181c24; }
+
+    textarea { resize: vertical; min-height: 60px; }
+
+    .toggle-row {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .toggle-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--red);
+      cursor: pointer;
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+
+    /* ===== RISK METER ===== */
+    .risk-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .risk-score-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+
+    .risk-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .risk-bg-circle {
+      fill: none;
+      stroke: var(--border-bright);
+      stroke-width: 10;
+    }
+
+    .risk-progress {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 408;
+      transition: stroke-dashoffset 1s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.5s ease;
+    }
+
+    .risk-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .risk-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+      transition: color 0.5s;
+    }
+
+    .risk-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .severity-badge {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--border);
+      color: var(--text-muted);
+      border: 1px solid var(--border-bright);
+      transition: all 0.4s ease;
+    }
+
+    .severity-badge.CRITICAL {
+      background: var(--red-dim);
+      color: var(--red);
+      border-color: rgba(255,45,74,0.3);
+    }
+
+    .severity-badge.HIGH {
+      background: rgba(255,107,43,0.08);
+      color: var(--orange);
+      border-color: rgba(255,107,43,0.3);
+    }
+
+    .severity-badge.MODERATE {
+      background: var(--yellow-glow);
+      color: var(--yellow);
+      border-color: rgba(245,197,24,0.3);
+    }
+
+    .severity-badge.LOW {
+      background: var(--green-glow);
+      color: var(--green);
+      border-color: rgba(0,232,122,0.3);
+    }
+
+    .risk-factors {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .factor-item {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      border-left: 3px solid var(--border-bright);
+      line-height: 1.4;
+      transition: all 0.3s ease;
+    }
+
+    .factor-item.active {
+      color: var(--text);
+      border-left-color: var(--red);
+    }
+
+    /* ===== AI SUMMARY ===== */
+    .summary-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      min-height: 120px;
+      position: relative;
+    }
+
+    .summary-box.has-content {
+      color: var(--text);
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 13px;
+      background: var(--red);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ===== PROTOCOL ===== */
+    .protocol-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .protocol-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: opacity 0.4s ease, transform 0.4s ease, color 0.3s;
+    }
+
+    .protocol-step.visible {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--text);
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      background: var(--border-bright);
+      color: var(--text-muted);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ===== INCIDENTS LOG ===== */
+    .incident-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 340px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-bright) transparent;
+    }
+
+    .incident-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .incident-item:hover { border-color: var(--border-bright); }
+
+    .incident-severity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-CRITICAL { background: var(--red); box-shadow: 0 0 6px var(--red); }
+    .dot-HIGH { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+    .dot-MODERATE { background: var(--yellow); }
+    .dot-LOW { background: var(--green); }
+
+    .incident-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .incident-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .incident-id {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .incident-time {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    .resolve-btn {
+      background: none;
+      border: 1px solid var(--border-bright);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .resolve-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .resolved-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    /* ===== ETA BADGE ===== */
+    .eta-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface-2);
+      border-radius: 10px;
+      border: 1px solid var(--border-bright);
+    }
+
+    .eta-icon { font-size: 1.4rem; }
+
+    .eta-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .eta-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 2rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 2rem; opacity: 0.4; }
+
+    /* ===== TOAST ===== */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--surface);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text);
+      z-index: 999;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      max-width: 400px;
+      text-align: center;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { border-color: rgba(255,45,74,0.4); color: var(--red); }
+    #toast.success { border-color: rgba(0,232,122,0.4); color: var(--green); }
+
+    /* ===== INCIDENT ID DISPLAY ===== */
+    .incident-id-display {
+      display: none;
+      padding: 10px 14px;
+      background: rgba(61,139,255,0.06);
+      border: 1px solid rgba(61,139,255,0.2);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--blue);
+      letter-spacing: 0.05em;
+    }
+
+    .incident-id-display.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🚨</div>
+      <div>ERITS <span>SYSTEM</span></div>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span id="system-status-text">OPERATIONAL</span>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== PANIC TRIGGER ===== -->
+    <section class="panic-section">
+      <div class="panic-btn-wrap">
+        <div class="panic-ring"></div>
+        <div class="panic-ring"></div>
+        <div class="panic-ring"></div>
+        <button class="panic-btn" id="panic-btn" onclick="triggerEmergency()">
+          <span class="panic-btn-icon">🆘</span>
+          <span>PANIC</span>
+        </button>
+      </div>
+
+      <div class="panic-info">
+        <div class="panic-title">One-tap <span>Emergency</span> Trigger</div>
+        <div class="panic-subtitle">Fill in your details, then hit PANIC. The system will score your risk, generate an alert summary, and dispatch the appropriate response protocol.</div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="name" placeholder="Priya Sharma" value="Demo User" />
+          </div>
+          <div class="form-group">
+            <label>User ID</label>
+            <input type="text" id="user_id" placeholder="USR-001" value="USR-001" />
+          </div>
+          <div class="form-group">
+            <label>Emergency Type</label>
+            <select id="emergency_type">
+              <option value="general">General Emergency</option>
+              <option value="assault">Assault / Threat</option>
+              <option value="medical">Medical Emergency</option>
+              <option value="fire">Fire / Smoke</option>
+              <option value="accident">Accident / Collision</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Movement Status</label>
+            <select id="movement_status">
+              <option value="stationary">Stationary</option>
+              <option value="moving">Moving</option>
+              <option value="erratic">Erratic</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location Label</label>
+            <input type="text" id="location_label" placeholder="e.g. Kurnool Bus Stand" value="Kurnool Bus Stand" />
+          </div>
+          <div class="form-group">
+            <label>Battery Level (%)</label>
+            <input type="number" id="battery" min="0" max="100" placeholder="e.g. 23" value="15" />
+          </div>
+          <div class="form-group full">
+            <label>Additional Context</label>
+            <textarea id="context" placeholder="Describe the situation…">Being followed by unknown person for 10 minutes near the bus stand</textarea>
+          </div>
+          <div class="form-group full">
+            <div class="toggle-row">
+              <label class="toggle-label">
+                <input type="checkbox" id="is_isolated" checked />
+                Isolated Location
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="incident-id-display" id="incident-id-display"></div>
+      </div>
+    </section>
+
+    <!-- ===== RISK METER ===== -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Risk Assessment</div>
+        <div class="severity-badge" id="severity-badge">PENDING</div>
+      </div>
+
+      <div class="risk-display">
+        <div class="risk-score-wrap">
+          <svg class="risk-svg" viewBox="0 0 140 140">
+            <circle class="risk-bg-circle" cx="70" cy="70" r="65" />
+            <circle class="risk-progress" id="risk-arc" cx="70" cy="70" r="65" stroke="#ff2d4a" />
+          </svg>
+          <div class="risk-center">
+            <div class="risk-number" id="risk-number">—</div>
+            <div class="risk-label">/ 100</div>
+          </div>
+        </div>
+
+        <div id="eta-display" style="display:none;" class="eta-badge">
+          <span class="eta-icon">🕐</span>
+          <div>
+            <div class="eta-label">Estimated Response</div>
+            <div class="eta-value" id="eta-value">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="risk-factors" id="risk-factors">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <div>Trigger an emergency to see risk factors</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== AI SUMMARY ===== -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">AI Alert Summary</div>
+      </div>
+
+      <div class="summary-box" id="summary-box">
+        <div class="empty-state" style="padding:0">
+          <div class="empty-icon">🤖</div>
+          <div>AI-generated summary will appear here after emergency is triggered</div>
+        </div>
+      </div>
+
+      <div class="card-header" style="margin-top: 0.5rem;">
+        <div class="card-title">Response Protocol</div>
+      </div>
+
+      <div class="protocol-list" id="protocol-list">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <div>Response steps will load here</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INCIDENT LOG ===== -->
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-header">
+        <div class="card-title">Incident Log</div>
+        <button onclick="loadIncidents()" style="background:none;border:1px solid var(--border-bright);color:var(--text-muted);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.05em;">REFRESH</button>
+      </div>
+      <div class="incident-list" id="incident-list">
+        <div class="empty-state">
+          <div class="empty-icon">📂</div>
+          <div>No incidents logged yet</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const API = '';  // Same origin — FastAPI serves this HTML
+
+    // Auto-fill coordinates from browser geolocation
+    let lat = 15.8281, lng = 78.0373;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+      });
+    }
+
+    async function triggerEmergency() {
+      const btn = document.getElementById('panic-btn');
+      btn.classList.add('loading');
+      btn.innerHTML = '<span class="panic-btn-icon">⏳</span><span>SENDING</span>';
+
+      const payload = {
+        user_id: document.getElementById('user_id').value || 'USR-001',
+        name: document.getElementById('name').value || 'Unknown',
+        latitude: lat,
+        longitude: lng,
+        location_label: document.getElementById('location_label').value || null,
+        is_isolated: document.getElementById('is_isolated').checked,
+        movement_status: document.getElementById('movement_status').value,
+        battery_level: parseInt(document.getElementById('battery').value) || null,
+        additional_context: document.getElementById('context').value || null,
+        emergency_type: document.getElementById('emergency_type').value,
+        time_of_day: null
+      };
+
+      try {
+        const res = await fetch(`${API}/api/emergency`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const data = await res.json();
+
+        renderRisk(data);
+        renderSummary(data.ai_summary);
+        renderProtocol(data.response_protocol);
+        showIncidentId(data.incident_id, data.severity);
+        showToast(`✅ Incident ${data.incident_id} logged — ${data.severity} severity`, 'success');
+        loadIncidents();
+
+      } catch (err) {
+        showToast(`❌ ${err.message} — Is the backend running?`, 'error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<span class="panic-btn-icon">🆘</span><span>PANIC</span>';
+      }
+    }
+
+    function renderRisk(data) {
+      const score = data.risk_score;
+      const severity = data.severity;
+
+      // Animated counter
+      animateNumber('risk-number', score);
+
+      // Arc progress
+      const arc = document.getElementById('risk-arc');
+      const circumference = 408;
+      const offset = circumference - (score / 100) * circumference;
+      arc.style.strokeDashoffset = offset;
+
+      // Color by severity
+      const colorMap = {
+        CRITICAL: '#ff2d4a',
+        HIGH: '#ff6b2b',
+        MODERATE: '#f5c518',
+        LOW: '#00e87a'
+      };
+      const color = colorMap[severity] || '#3d8bff';
+      arc.style.stroke = color;
+      document.getElementById('risk-number').style.color = color;
+
+      // Severity badge
+      const badge = document.getElementById('severity-badge');
+      badge.textContent = severity;
+      badge.className = `severity-badge ${severity}`;
+
+      // ETA
+      document.getElementById('eta-display').style.display = 'flex';
+      document.getElementById('eta-value').textContent = data.estimated_response_time;
+
+      // Risk factors
+      const container = document.getElementById('risk-factors');
+      container.innerHTML = '';
+      data.risk_factors.forEach((f, i) => {
+        const el = document.createElement('div');
+        el.className = 'factor-item';
+        el.textContent = f;
+        container.appendChild(el);
+        setTimeout(() => el.classList.add('active'), i * 100);
+      });
+    }
+
+    function renderSummary(text) {
+      const box = document.getElementById('summary-box');
+      box.className = 'summary-box has-content';
+      box.innerHTML = '';
+      
+      let i = 0;
+      const cursor = document.createElement('span');
+      cursor.className = 'typing-cursor';
+
+      function type() {
+        if (i < text.length) {
+          box.textContent += text[i++];
+          box.appendChild(cursor);
+          setTimeout(type, 12);
+        } else {
+          cursor.remove();
+        }
+      }
+      type();
+    }
+
+    function renderProtocol(steps) {
+      const container = document.getElementById('protocol-list');
+      container.innerHTML = '';
+      steps.forEach((step, i) => {
+        const el = document.createElement('div');
+        el.className = 'protocol-step';
+        el.innerHTML = `<div class="step-num">${i + 1}</div><div>${step}</div>`;
+        container.appendChild(el);
+        setTimeout(() => el.classList.add('visible'), i * 150);
+      });
+    }
+
+    function showIncidentId(id, severity) {
+      const el = document.getElementById('incident-id-display');
+      el.textContent = `📌 Incident logged: ${id} | Severity: ${severity}`;
+      el.className = 'incident-id-display visible';
+    }
+
+    async function loadIncidents() {
+      try {
+        const res = await fetch(`${API}/api/incidents`);
+        const data = await res.json();
+        const container = document.getElementById('incident-list');
+
+        if (!data.length) {
+          container.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><div>No incidents logged yet</div></div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        data.forEach(inc => {
+          const el = document.createElement('div');
+          el.className = 'incident-item';
+          const t = new Date(inc.timestamp).toLocaleTimeString();
+          const action = inc.status === 'ACTIVE'
+            ? `<button class="resolve-btn" onclick="resolveIncident('${inc.id}')">Resolve</button>`
+            : `<span class="resolved-tag">✔ RESOLVED</span>`;
+          el.innerHTML = `
+            <div class="incident-severity-dot dot-${inc.severity}"></div>
+            <div class="incident-meta">
+              <div class="incident-name">${inc.user?.name || 'Unknown'} — ${inc.severity}</div>
+              <div class="incident-id">${inc.id} · Score: ${inc.risk_score}/100 · ${inc.user?.emergency_type?.toUpperCase()}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+              <div class="incident-time">${t}</div>
+              ${action}
+            </div>
+          `;
+          container.appendChild(el);
+        });
+      } catch (e) {
+        // Silently fail on load
+      }
+    }
+
+    async function resolveIncident(id) {
+      try {
+        await fetch(`${API}/api/incidents/${id}/resolve`, { method: 'POST' });
+        showToast(`✅ Incident ${id} resolved`, 'success');
+        loadIncidents();
+      } catch (e) {
+        showToast('❌ Failed to resolve', 'error');
+      }
+    }
+
+    function animateNumber(id, target) {
+      const el = document.getElementById(id);
+      let current = 0;
+      const step = Math.ceil(target / 30);
+      const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current;
+        if (current >= target) clearInterval(timer);
+      }, 30);
+    }
+
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `show ${type}`;
+      setTimeout(() => t.className = '', 4000);
+    }
+
+    // Load incidents on startup
+    loadIncidents();
+
+    // Refresh status pill
+    async function refreshStatus() {
+      try {
+        const res = await fetch(`${API}/api/status`);
+        const data = await res.json();
+        document.getElementById('system-status-text').textContent =
+          `${data.status} · ${data.active_incidents} ACTIVE · ${data.total_incidents} TOTAL`;
+      } catch (e) {}
+    }
+    refreshStatus();
+    setInterval(refreshStatus, 10000);
+  </script>
+
+</body>
+</html>

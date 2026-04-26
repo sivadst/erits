@@ -1,0 +1,70 @@
+[
+  {
+    "id": "INC-341100BC",
+    "timestamp": "2026-04-26T05:43:29.619002",
+    "status": "ACTIVE",
+    "user": {
+      "user_id": "USR-001",
+      "name": "Demo User",
+      "latitude": 15.8281,
+      "longitude": 78.0373,
+      "location_label": "Kurnool Bus Stand",
+      "battery_level": 15,
+      "movement_status": "stationary",
+      "is_isolated": true,
+      "emergency_type": "general",
+      "additional_context": "Being followed by unknown person for 10 minutes near the bus stand"
+    },
+    "risk_score": 56,
+    "severity": "MODERATE",
+    "risk_factors": [
+      "Isolated location detected (+20 pts)",
+      "Person stationary \u2014 possible incapacitation (+5 pts)",
+      "Low battery: 15% \u2014 risk of signal loss (+8 pts)",
+      "Threat keywords detected: follow (+8 pts)"
+    ],
+    "ai_summary": "\ud83d\udfe1 ALERT: Situation flagged for review.\n\nIndividual: Demo User (ID: USR-001) has triggered an emergency situation at Kurnool Bus Stand during morning hours. The individual is in an isolated area, and has been stationary, and has critical battery at 15%. Reported context: \"Being followed by unknown person for 10 minutes near the bus stand\"\n\nRisk Assessment: Score 56/100 \u2014 MODERATE severity. Moderate risk factors detected. User should be contacted immediately to verify safety.\n\nEstimated Response Time: 12\u201320 minutes. A check-in notification has been sent to the user. Escalate to HIGH if no response within 5 minutes.",
+    "response_protocol": [
+      "\ud83d\udcde Contact user to confirm status",
+      "\ud83d\udccd Begin location monitoring",
+      "\ud83d\udcac Send check-in notification",
+      "\u23f1\ufe0f Escalate if no response in 5 minutes"
+    ],
+    "estimated_response_time": "12\u201320 minutes",
+    "resolved_at": null
+  },
+  {
+    "id": "INC-3DC0EBAB",
+    "timestamp": "2026-04-26T05:43:42.913350",
+    "status": "ACTIVE",
+    "user": {
+      "user_id": "USR-001",
+      "name": "Demo User",
+      "latitude": 15.8281,
+      "longitude": 78.0373,
+      "location_label": "Kurnool Bus Stand",
+      "battery_level": 15,
+      "movement_status": "stationary",
+      "is_isolated": true,
+      "emergency_type": "general",
+      "additional_context": "Being followed by unknown person for 10 minutes near the bus stand"
+    },
+    "risk_score": 56,
+    "severity": "MODERATE",
+    "risk_factors": [
+      "Isolated location detected (+20 pts)",
+      "Person stationary \u2014 possible incapacitation (+5 pts)",
+      "Low battery: 15% \u2014 risk of signal loss (+8 pts)",
+      "Threat keywords detected: follow (+8 pts)"
+    ],
+    "ai_summary": "\ud83d\udfe1 ALERT: Situation flagged for review.\n\nIndividual: Demo User (ID: USR-001) has triggered an emergency situation at Kurnool Bus Stand during morning hours. The individual is in an isolated area, and has been stationary, and has critical battery at 15%. Reported context: \"Being followed by unknown person for 10 minutes near the bus stand\"\n\nRisk Assessment: Score 56/100 \u2014 MODERATE severity. Moderate risk factors detected. User should be contacted immediately to verify safety.\n\nEstimated Response Time: 12\u201320 minutes. A check-in notification has been sent to the user. Escalate to HIGH if no response within 5 minutes.",
+    "response_protocol": [
+      "\ud83d\udcde Contact user to confirm status",
+      "\ud83d\udccd Begin location monitoring",
+      "\ud83d\udcac Send check-in notification",
+      "\u23f1\ufe0f Escalate if no response in 5 minutes"
+    ],
+    "estimated_response_time": "12\u201320 minutes",
+    "resolved_at": null
+  }
+]
